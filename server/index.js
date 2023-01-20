@@ -1,21 +1,37 @@
 const express = require('express');
+const morgan = require('morgan');
+const path = require('path');
+const {getReposByUsername} = require('../helpers/github.js');
+const { save, getAll } = require('../database')
+
 let app = express();
 
-// TODO - your code here!
-// Set up static file service for files in the `client/dist` directory.
-// Webpack is configured to generate files in that directory and
-// this server must serve those files when requested.
+app.use(morgan('tiny'));
+app.use(express.json());
+
+app.use(express.static('client/dist/'));
 
 app.post('/repos', function (req, res) {
-  // TODO - your code here!
-  // This route should take the github username provided
-  // and get the repo information from the github API, then
-  // save the repo information in the database
+  getReposByUsername(req.body.user)
+  .then(()=>{
+    console.log('I saved the data to the DB');
+    res.json('post request success');
+  })
+  .catch((err)=>{
+    console.log('Error saving to the DB', err);
+  })
+
 });
 
 app.get('/repos', function (req, res) {
-  // TODO - your code here!
-  // This route should send back the top 25 repos
+  console.log('somebody is hitting get req')
+  getAll()
+  .then((data) => {
+    res.json(data);
+  })
+  .catch((err) => {
+    console.log('ERROR getting all repos');
+  })
 });
 
 let port = 1128;

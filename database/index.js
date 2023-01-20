@@ -2,15 +2,24 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/fetcher');
 
 let repoSchema = mongoose.Schema({
-  // TODO: your schema here!
+  _id: {type: Number, unique: true},
+  owner_id: Number, // owner id but using _id
+  owner_name: String,
+  repo_name: String,
+  repo_url: String,
+  forks: Number,
+  watchers: Number
 });
 
 let Repo = mongoose.model('Repo', repoSchema);
 
-let save = (/* TODO */) => {
-  // TODO: Your code here
-  // This function should save a repo or repos to
-  // the MongoDB
+const save = (repoArr) => {
+  return Repo.insertMany(repoArr);
+}
+
+const getAll = () => {
+  return Repo.find().sort({watchers: -1}).limit(25);
 }
 
 module.exports.save = save;
+module.exports.getAll = getAll;
